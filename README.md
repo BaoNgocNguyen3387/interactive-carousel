@@ -20,6 +20,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ## High-level overview of the project structure
 
+```text
 src/
 ├─ components/
 │ ├─ slider/
@@ -42,6 +43,7 @@ src/
 │ └─ index.css
 ├─ App.tsx
 └─ index.tsx
+```
 
 ## Explanation of how drag (mouse) and swipe (touch) interactions are implemented
 
