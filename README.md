@@ -8,7 +8,9 @@
 ## Install dependencies
 
 - npm install
+
   or
+
 - yarn install
 
 ## Run project locally
