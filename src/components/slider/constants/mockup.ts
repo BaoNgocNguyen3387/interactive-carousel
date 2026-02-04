@@ -1,0 +1,92 @@
+export const fakeData = [
+  {
+    id: 1,
+    title: "Slide 1",
+    image: "https://picsum.photos/id/14/600/300",
+    landing_page: "https://landingpage1",
+  },
+  {
+    id: 2,
+    title: "Slide 2",
+    image: "https://picsum.photos/id/16/600/300",
+    landing_page: "https://landingpage2",
+  },
+  {
+    id: 3,
+    title: "Slide 3",
+    image: "https://picsum.photos/id/13/600/300",
+    landing_page: "https://landingpage3",
+  },
+  {
+    id: 4,
+    title: "Slide 4",
+    image: "https://picsum.photos/id/18/600/300",
+    landing_page: "https://landingpage4",
+  },
+  {
+    id: 5,
+    title: "Slide 5",
+    image: "https://picsum.photos/id/10/600/300",
+    landing_page: "https://landingpage5",
+  },
+  {
+    id: 6,
+    title: "Slide 6",
+    image: "https://picsum.photos/id/12/600/300",
+    landing_page: "https://landingpage6",
+  },
+  {
+    id: 7,
+    title: "Slide 7",
+    image: "https://picsum.photos/id/15/600/300",
+    landing_page: "https://landingpage7",
+  },
+  {
+    id: 8,
+    title: "Slide 8",
+    image: "https://picsum.photos/id/17/600/300",
+    landing_page: "https://landingpage8",
+  },
+  {
+    id: 9,
+    title: "Slide 9",
+    image: "https://picsum.photos/id/19/600/300",
+    landing_page: "https://landingpage9",
+  },
+  {
+    id: 10,
+    title: "Slide 10",
+    image: "https://picsum.photos/id/20/600/300",
+    landing_page: "https://landingpage10",
+  },
+  {
+    id: 11,
+    title: "Slide 11",
+    image: "https://picsum.photos/id/21/600/300",
+    landing_page: "https://landingpage11",
+  },
+  {
+    id: 12,
+    title: "Slide 12",
+    image: "https://picsum.photos/id/22/600/300",
+    landing_page: "https://landingpage12",
+  },
+  {
+    id: 13,
+    title: "Slide 13",
+    image: "https://picsum.photos/id/23/600/300",
+    landing_page: "https://landingpage13",
+  },
+  {
+    id: 14,
+    title: "Slide 14",
+    image: "https://picsum.photos/id/24/600/300",
+    landing_page: "https://landingpage14",
+  },
+  {
+    id: 15,
+    title: "Slide 15",
+    image: "https://picsum.photos/id/25/600/300",
+    landing_page: "https://landingpage15",
+  },
+];

@@ -1,46 +1,95 @@
-# Getting Started with Create React App
+# Project information
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Project enviroment
 
-## Available Scripts
+- Node.js >= 16
+- npm or yarn
 
-In the project directory, you can run:
+## Install dependencies
 
-### `npm start`
+- npm install
+  or
+- yarn install
+
+## Run project locally
+
+- npm start
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## High-level overview of the project structure
 
-### `npm test`
+src/
+├─ components/
+│ ├─ slider/
+│ │ ├─ components/
+│ │ │ ├─ index.ts
+│ │ │ ├─ SlideContainer.tsx
+│ │ │ └─ SlideItem.tsx
+│ │ ├─ constants/
+│ │ │ ├─ index.ts
+│ │ │ └─ mockup.ts
+│ │ ├─ styles/
+│ │ │ └─ index.scss
+│ │ ├─ ultis/
+│ │ │ └─ index.ts
+│ │ ├─ index.ts
+│ │ └─ interface.ts
+│ └─ index.ts
+├─ styles/
+│ ├─ App.css
+│ └─ index.css
+├─ App.tsx
+└─ index.tsx
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Explanation of how drag (mouse) and swipe (touch) interactions are implemented
 
-### `npm run build`
+- Sử dụng các Pointer Event giúp xử lý đồng thời các thao tác drag và swipe trên destop và mobile trở nên mượt hơn, bởi các Pointer Event này hỗ trợ native touch, tránh phải viết riêng cho từng trường hợp mouse và touch
+- Sử dụng các Mouse Event hoặc Touch Event khiến cho việc drag hoặc swipe trở nên khó hiểu hơn với người dùng khi các thao tác trở nên phức tạp và hoạt động không theo mong muốn
+- Có ba function giúp xử lý logic của drag và swipe
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### startDrag function
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Khi user nhấn và giữ vào slide sẽ update các state:
+  isDragging: để dừng chế độ autoplay
+  startX: lưu lại vị trí X ban đầu
+  dragStartX: lưu lại vị trí translateX ban dầu
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Đồng thời tắt hiệu ứng transition và setPoiterCapture để đảm bảo vẫn nhận được event dù con trỏ rời khỏi element
 
-### `npm run eject`
+### onDrag function
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- Có nhiệm vụ update translateX khi user kéo slide sang trái hoặc phải, giúp UI dịch chuyển tương ứng với khoảng cách kéo thực tế của UI, tạo cảm giác tự nhiên hơn
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Giá trị translateX transform của slide-list được tính toán bằng các trừ đi BASE_OFFSET (là thương của BUFFER - số lượng item cần rotate vào array và CARD_WIDTH - độ rộng của slide). Cách tính này giúp cho việc drag và swipe trở nên mượt hơn, tránh được lỗi kéo sang trái thì hiển thị các item tiếp theo nhưng kéo sang phải thì không hiển thị các item trước đó, dừng thao tác thì mới tính toán và hiển thị lại
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### endDrag function
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- Khi use dừng thao tác bằng cách thả chuột hoặc nhấc tay, sẽ update state isDragging về false để có thể tiếp tục auto play
 
-## Learn More
+- Đồng thời sẽ tính toán lại các thông tin:
+  diff: Khoảng cách kéo
+  shiftCount: Xác định số slide cần dịch chuyển, nếu không có thay đổi hoặc bé hơn giá trị DRAG_THRESHOLD thì sẽ update vè vị trí cũ và hiệu ứng dịch chuyển. Ngược lại, sẽ rotate lại list slide, reset translateX về 0 để chuẩn bị cho lần kéo tiếp theo
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Description of how edge cases are handled (e.g. infinite loop, preventing clicks while dragging, pause on hover)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Infinity Loop
+
+- Thay vì clone DOM hoặc jump index, sử dụng kỹ thuật rotate data array với function rotateLeft tạo cảm giác không có điểm đầu và điểm cuối
+  rotateLeft([1,2,3,4]) → [2,3,4,1]
+
+- Sau mỗi lần di chuyển sang trái một slide:
+  Dịch chuyển UI với translateX
+  Khi animation kết thúc, reset về vị trí 0 và rotate lại list slide
+
+### Preventing clicks while dragging
+
+- SlideItem nhận prop isDragging, nếu isDragging thì sẽ disable click, ngăn việc click nhầm khi đang thao tác
+
+### Pause on hover
+
+- Khi user hover hoặc drag slide, sẽ update các state tương ứng, khiến kích hoạt Effect xử lý
+  Khi Effect được kích hoạt, đầu tiên sẽ chạy cleanup function để clearInterval với các giá trị của dependency cũ, sau đó mới chạy setup function. Lúc này, sẽ gặp điều kiện và sẽ return luôn, không kích hoạt lại interval, nên không chạy function slideNext, nên slide sẽ không tự động chạy tiếp
+
+- Thao tác dừng autoplay khi hover hoặc drag giúp tránh xung đột trong việc hiển thị giữa logic autoplay và thao tác của user
