@@ -1,7 +1,7 @@
 import { MouseEvent } from "react";
 import { ISlideItemProps } from "../interface";
 
-const SlideItem = ({ slide, isDragging }: ISlideItemProps) => {
+const SlideItem = ({ slide, cardWidth, isDragging }: ISlideItemProps) => {
   const onClickSlide = (e: MouseEvent<HTMLLIElement>) => {
     if (isDragging) {
       e.preventDefault();
@@ -11,7 +11,11 @@ const SlideItem = ({ slide, isDragging }: ISlideItemProps) => {
   };
 
   return (
-    <li className="slide-item" onClick={onClickSlide}>
+    <li
+      className="slide-item"
+      style={{ width: cardWidth, height: cardWidth }}
+      onClick={onClickSlide}
+    >
       <img src={slide?.image} alt={slide?.title} />
     </li>
   );

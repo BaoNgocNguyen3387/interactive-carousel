@@ -13,5 +13,6 @@ export interface ISlideProps {
 
 export interface ISlideItemProps {
   slide: ISlideItem;
+  cardWidth: number;
   isDragging: boolean;
 }

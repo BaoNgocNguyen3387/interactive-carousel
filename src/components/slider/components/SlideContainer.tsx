@@ -1,9 +1,16 @@
-import { PointerEvent, useEffect, useRef, useState } from "react";
+import {
+  PointerEvent,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ISlideItem, ISlideProps } from "../interface";
 import "../styles/index.css";
 import {
   AUTO_PLAY_DELAY,
-  BASE_OFFSET,
+  BUFFER,
   CARD_WIDTH,
   DRAG_THRESHOLD,
   MINIMUM_SLIDES,
@@ -23,8 +30,25 @@ const SlideContainer = ({
   const [startX, setStartX] = useState(0);
   const [dragStartX, setDragStartX] = useState(0);
   const [pause, setPause] = useState(false);
+  const [cardWidth, setCardWidth] = useState(CARD_WIDTH);
 
   const trackRef = useRef<HTMLUListElement>(null);
+
+  useLayoutEffect(() => {
+    const el = document.querySelector(".slide") as HTMLElement;
+    if (!el) return;
+
+    const calCardWidth = () => {
+      const rect = el.getBoundingClientRect();
+      setCardWidth((rect.width - 24) / 2.5);
+    };
+
+    calCardWidth();
+
+    window.addEventListener("resize", calCardWidth);
+
+    return () => window.removeEventListener("resize", calCardWidth);
+  }, []);
 
   useEffect(() => {
     if (!slideList?.length) return;
@@ -40,7 +64,7 @@ const SlideContainer = ({
       if (!track) return;
 
       track.style.transition = "transform 0.4s ease";
-      setTranslateX(-CARD_WIDTH);
+      setTranslateX(-cardWidth);
 
       track.addEventListener(
         "transitionend",
@@ -91,7 +115,7 @@ const SlideContainer = ({
 
     track.releasePointerCapture(e.pointerId);
 
-    const shiftCount = Math.round(abs / CARD_WIDTH);
+    const shiftCount = Math.round(abs / cardWidth);
     if (shiftCount === 0 || abs < DRAG_THRESHOLD) {
       track.style.transition = "transform 0.3s ease";
       setTranslateX(0);
@@ -111,6 +135,16 @@ const SlideContainer = ({
     });
   };
 
+  const extendedItems = useMemo(() => {
+    if (!itemList.length) return [];
+
+    return [
+      ...itemList.slice(-BUFFER),
+      ...itemList,
+      ...itemList.slice(0, BUFFER),
+    ];
+  }, [itemList]);
+
   if (slideList?.length < MINIMUM_SLIDES)
     return <p>Not enough slides to display</p>;
 
@@ -119,21 +153,26 @@ const SlideContainer = ({
       className="slide"
       onMouseEnter={() => setPause(true)}
       onMouseLeave={() => setPause(false)}
-      style={{ width: viewportWidth }}
+      style={{ maxWidth: viewportWidth, width: "100%" }}
     >
       <ul
         ref={trackRef}
         className="slide-list"
         style={{
-          transform: `translateX(${translateX - BASE_OFFSET}px)`,
+          transform: `translateX(${translateX}px)`,
         }}
         onPointerDown={startDrag}
         onPointerMove={onDrag}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
       >
-        {itemList.map((slide) => (
-          <SlideItem key={slide.id} slide={slide} isDragging={isDragging} />
+        {extendedItems.map((slide, i) => (
+          <SlideItem
+            key={`${slide.id}-${i}`}
+            slide={slide}
+            cardWidth={cardWidth}
+            isDragging={isDragging}
+          />
         ))}
       </ul>
     </div>
